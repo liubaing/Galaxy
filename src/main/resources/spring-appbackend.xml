@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
+
+	<!-- 使用annotation 自动注册bean,Mapped URL path on Controller -->
+	<context:component-scan base-package="com.liubaing.shiny_liubaing.controller" use-default-filters="false">
+		<context:include-filter type="regex" expression=".*Controller"/>
+	</context:component-scan>
+	
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" >
+		<!-- 拦截器，校验token -->
+		<property name="interceptors">
+          	<list>
+              	<ref bean="tokenFilter"/>
+          	</list>
+		</property>
+    </bean>
+	<bean id="tokenFilter" class="com.com.liubaing.shiny_liubaing.oauth.OAuthTokenFilter">
+		<property name="excludeMappingURL">
+			<array>
+				<value>auth/login</value>
+				<value>/reset</value>
+				<value>/order</value>
+				<value>/admin</value>
+			</array>
+		</property>
+	</bean> 
+	
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" >
+		<!-- responseType -->
+		<property name="messageConverters">
+            <list>  
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter">  
+       				<property name="supportedMediaTypes">  
+                      	<list>  
+                          	<value>application/json;charset=UTF-8</value>
+                          	<value>application/x-www-form-urlencoded;charset=UTF-8</value>
+                      	</list>  
+               		</property>
+               		<property name="writeAcceptCharset" value="false"></property>
+           		</bean>
+   			</list>  
+		</property>
+	</bean>
+	
+	<!-- 统一异常处理-->
+	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"></bean>
+	 
+	<!-- 配置静态资源 -->
+	<mvc:default-servlet-handler/>
+	
+	<!-- 注册视图解析器，就是根据返回值指定到某个页面 -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+		<!--页面文件的路径，在/WEB-INF目录下,防止直接访问-->
+		<property name="prefix">
+			<value>/WEB-INF/jsp/</value>
+		</property>
+		<property name="suffix">
+			<value>.jsp</value>
+		</property>
+	</bean>
+</beans>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- scan:默认值为true scanPeriod:默认单位是毫秒,默认的时间间隔为1分钟  debug:默认值为false。 -->
+<configuration>
+	<!-- appender -->
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>[%-5level %d{HH:mm:ss.SSS}] - %msg%n</pattern>
+		</layout>
+	</appender>
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>../logs/shiny-%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss} - %msg%n</pattern>
+        </encoder>
+    </appender>
+	<logger name="net.rubyeye.xmemcached" additivity="true" level="error">
+		<appender-ref ref="CONSOLE" />
+	</logger>
+	<logger name="com.google.code.yanf4j" additivity="true" level="error">
+		<appender-ref ref="CONSOLE" />
+	</logger>
+	<!-- root 默认日志配置 -->
+	<root level="DEBUG">
+		<appender-ref ref="CONSOLE" />
+	</root>
+	
+</configuration>
