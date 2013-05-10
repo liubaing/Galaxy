@@ -1,4 +1,14 @@
-shiny_liubaing
+Welcome to Galaxy
+==============
+Galaxy for server side of mobile application with RESTful architectures.
+
+
+Features
 ==============
 
-shiny server side 
+1、Spring Data
+2、Gson
+3、APNS
+4、Alipay
+5、MongoDB
+
