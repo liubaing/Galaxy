@@ -9,6 +9,5 @@ Features
 1、Spring Data
 2、Gson
 3、APNS
-4、Alipay
-5、MongoDB
+4、MongoDB
 

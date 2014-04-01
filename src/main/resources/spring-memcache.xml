@@ -25,8 +25,8 @@
         factory-method="build" destroy-method="shutdown" />
        
     <!-- 封转基本get/set方法，处理异常信息 -->
-    <bean name="CacheManager" depends-on="memcachedClient" 
-    	class="com.ulearning.ulms.appbackend.util.support.CacheManager"
+    <bean name="CacheManager" depends-on="memcachedClient"
+    	class="com.liubaing.galaxy.util.support.CacheManager"
     	p:memcachedClient-ref="memcachedClient"/>
     	
 </beans>

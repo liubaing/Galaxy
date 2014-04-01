@@ -1,4 +1,11 @@
 *.class
+# eclipse #
+*.classpath
+*.project
+
+# idea #
+.iml
+
 
 # Package Files #
 *.jar

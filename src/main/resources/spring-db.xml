@@ -18,7 +18,7 @@
         http://www.springframework.org/schema/data/jpa/spring-jpa.xsd ">
 	
 	<!-- 使用annotation 自动注册bean,过滤controller -->
-	<context:component-scan base-package="com.ulearning.ulms.appbackend" >
+	<context:component-scan base-package="com.liubaing.galaxy." >
 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
 	</context:component-scan>
 	
@@ -37,7 +37,7 @@
 	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<!-- 目前Servlet容器为Tomcat -->
 		<property name="dataSource" ref="dataSource"></property>
-		<property name="packagesToScan" value="com.ulearning.ulms.appbackend.entity"></property>
+		<property name="packagesToScan" value="com.liubaing.galaxy.entity"></property>
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
 				<property name="showSql" value="true" />
@@ -46,7 +46,7 @@
 		</property>
 	</bean>
 	
-	<jpa:repositories base-package="com.ulearning.ulms.appbackend.repository.jpa"  transaction-manager-ref="transactionManager" entity-manager-factory-ref="entityManagerFactory"/>
+	<jpa:repositories base-package="com.liubaing.galaxy.repository.jpa"  transaction-manager-ref="transactionManager" entity-manager-factory-ref="entityManagerFactory"/>
 	
 	<!-- Jpa 事务配置 -->
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
@@ -69,39 +69,9 @@
     </tx:advice>
     
     <aop:config>
-        <aop:pointcut id="Methods" expression="execution(* com.ulearning.ulms.appbackend.service.*.*(..))" />
+        <aop:pointcut id="Methods" expression="execution(* com.liubaing.galaxy.service.*.*(..))" />
         <aop:advisor advice-ref="txAdvice" pointcut-ref="Methods" />
     </aop:config>
-    
-    <!-- 
-    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
-    	<property name="dataSource">
-    		<ref local="dataSource"/>
-    	</property>
-    	<property name="packagesToScan" value="com.ulearning.ulms.appbackend.entity"/>
-    	<property name="hibernateProperties">
-			<props>
-				<prop key="hibernate.dialect">${hibernate.dialect}</prop>  
-	            <prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
-	            <prop key="hibernate.format_sql">${hibernate.format_sql}</prop>  
-			
-				<prop key="hibernate.connection.pool_size">${hibernate.connection.pool_size}</prop>
-				<prop key="hibernate.c3p0.min_size">${hibernate.c3p0.min_size}</prop>
-				<prop key="hibernate.c3p0.max_size">${hibernate.c3p0.max_size}</prop>
-				<prop key="hibernate.c3p0.max_statements">${hibernate.c3p0.max_statements}</prop>
-				<prop key="hibernate.c3p0.acquire_increment">${hibernate.c3p0.acquire_increment}</prop>				
-				<prop key="hibernate.c3p0.timeout">${hibernate.c3p0.timeout}</prop>
-				<prop key="hibernate.c3p0.idle_test_period">${hibernate.c3p0.idle_test_period}</prop>
-				
-				<prop key="hibernate.cache.use_query_cache">${hibernate.cache.use_query_cache}</prop>
-				<prop key="hibernate.cache.provider_class">${hibernate.cache.provider_class}</prop>
-				<prop key="hibernate.cache.region.factory_class">${hibernate.cache.region.factory_class}</prop>
-			</props>
-		</property>
-    </bean> 
-    <bean id="transactionManager" 
-    	class="org.springframework.orm.hibernate4.HibernateTransactionManager"
-    	p:sessionFactory-ref="sessionFactory"/>
-	-->
+
     
 </beans>

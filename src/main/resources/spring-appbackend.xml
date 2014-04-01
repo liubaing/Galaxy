@@ -11,7 +11,7 @@
 		http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
 
 	<!-- 使用annotation 自动注册bean,Mapped URL path on Controller -->
-	<context:component-scan base-package="com.ulearning.ulms.appbackend.controller" use-default-filters="false">
+	<context:component-scan base-package="com.liubaing.galaxy.controller" use-default-filters="false">
 		<context:include-filter type="regex" expression=".*Controller"/>
 	</context:component-scan>
 	
@@ -23,13 +23,10 @@
           	</list>
 		</property>
     </bean>
-	<bean id="tokenFilter" class="com.ulearning.ulms.appbackend.oauth.OAuthTokenFilter">
+	<bean id="tokenFilter" class="com.liubaing.galaxy.oauth.OAuthTokenFilter">
 		<property name="excludeMappingURL">
 			<array>
 				<value>auth/login</value>
-				<value>/reset</value>
-				<value>/order</value>
-				<value>/admin</value>
 			</array>
 		</property>
 	</bean> 
@@ -51,7 +48,7 @@
 		</property>
 	</bean>
 	
-	<bean class="com.ulearning.ulms.appbackend.util.support.ContextAware"></bean>
+	<bean class="com.liubaing.galaxy.util.support.ContextAware"></bean>
 	
 	<!-- 统一异常处理-->
 	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"></bean>
