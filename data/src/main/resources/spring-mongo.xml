@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+       http://www.springframework.org/schema/data/mongo 
+       http://www.springframework.org/schema/data/mongo/spring-mongo.xsd ">
+
+	<!-- moogoDB配置 -->
+	<mongo:mongo id="mongo" replica-set="192.168.1.21:27017,192.168.1.25:27017,192.168.1.27:27017"/>
+	
+	<!-- mongo的工厂，通过它来取得mongo实例,dbname为mongodb的数据库名，没有的话会自动创建 --> 
+	<mongo:db-factory id="mongoDbFactory" dbname="appbackend" mongo-ref="mongo" />
+	
+	<!-- 模板类 -->
+	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
+	</bean>
+	
+	<mongo:mapping-converter base-package="com.liubaing.galaxy.entity" />
+	
+	<mongo:repositories base-package="com.liubaing.galaxy.repository.mongodb" />
+	
+</beans>
