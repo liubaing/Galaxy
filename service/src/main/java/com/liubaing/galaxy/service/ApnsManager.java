@@ -1,4 +1,4 @@
-package com.liubaing.galaxy.task;
+package com.liubaing.galaxy.service;
 
 import com.liubaing.galaxy.repository.jpa.DeviceTokenRepository;
 import com.liubaing.galaxy.repository.jpa.UserRepository;

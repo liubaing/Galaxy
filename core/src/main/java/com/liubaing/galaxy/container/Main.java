@@ -1,30 +1,29 @@
 package com.liubaing.galaxy.container;
 
+import com.liubaing.galaxy.util.ConfigUtils;
+import com.liubaing.galaxy.util.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.liubaing.galaxy.util.ConfigUtils;
-import com.liubaing.galaxy.util.Constants;
 /**
  * Main!
  * 参考Ali团队Code
  */
-public class Main 
-{
-	public static final String CONTAINER_KEY = "container";
+public class Main {
+    public static final String CONTAINER_KEY = "container";
 
     public static final String SHUTDOWN_HOOK_KEY = "shutdown.hook";
-    
+
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     private static final ExtensionLoader<Container> loader = ExtensionLoader.getExtensionLoader(Container.class);
-    
+
     private static volatile boolean running = true;
 
     public static void main(String[] args) {
@@ -33,32 +32,32 @@ public class Main
                 String config = ConfigUtils.getProperty(CONTAINER_KEY);
                 args = Constants.COMMA_SPLIT_PATTERN.split(config);
             }
-            
+
             final List<Container> containers = new ArrayList<Container>();
-            for (int i = 0; i < args.length; i ++) {
+            for (int i = 0; i < args.length; i++) {
                 containers.add(loader.getExtension(args[i]));
             }
             logger.info("Use container type(" + Arrays.toString(args) + ") to run serivce.");
-            
+
             if ("true".equals(ConfigUtils.getProperty(SHUTDOWN_HOOK_KEY))) {
-                    Runtime.getRuntime().addShutdownHook(new Thread() {
-                        public void run() {
-                            for (Container container : containers) {
-                                try {
-                                    container.stop();
-                                    logger.info("Serivce " + container.getClass().getSimpleName() + " stopped!");
-                                } catch (Throwable t) {
-                                    logger.error(t.getMessage(), t);
-                                }
-                                synchronized (Main.class) {
-                                    running = false;
-                                    Main.class.notify();
-                                }
+                Runtime.getRuntime().addShutdownHook(new Thread() {
+                    public void run() {
+                        for (Container container : containers) {
+                            try {
+                                container.stop();
+                                logger.info("Serivce " + container.getClass().getSimpleName() + " stopped!");
+                            } catch (Throwable t) {
+                                logger.error(t.getMessage(), t);
+                            }
+                            synchronized (Main.class) {
+                                running = false;
+                                Main.class.notify();
                             }
                         }
-                    });
+                    }
+                });
             }
-            
+
             for (Container container : containers) {
                 container.start();
                 logger.info("Serivce " + container.getClass().getSimpleName() + " started!");

@@ -1,10 +1,9 @@
 package com.liubaing.galaxy.repository.mongodb;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.MongoRepository;
-
 import com.liubaing.galaxy.entity.Platform;
 import com.liubaing.galaxy.entity.Version;
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
  * 
@@ -14,6 +13,6 @@ import com.liubaing.galaxy.entity.Version;
  */
 public interface VersionRepository extends MongoRepository<Version, ObjectId>{
 
-	public Version findByPlatformOrderByVersionCodeDesc(Platform platform);
+	Version findByPlatformOrderByVersionCodeDesc(Platform platform);
 	
 }

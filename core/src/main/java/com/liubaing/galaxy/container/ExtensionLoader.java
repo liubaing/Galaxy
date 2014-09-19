@@ -1,5 +1,8 @@
 package com.liubaing.galaxy.container;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,26 +13,23 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class ExtensionLoader<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(ExtensionLoader.class);
-    
+
     private static final String EXTENSION_DIR = "META-INF/extension/";
-    
+
     private static final ConcurrentMap<Class<?>, ExtensionLoader<?>> EXTENSION_LOADERS = new ConcurrentHashMap<Class<?>, ExtensionLoader<?>>();
-    
+
     private final ConcurrentMap<String, Object> EXTENSION_INSTANCES = new ConcurrentHashMap<String, Object>();
 
     private final Class<?> type;
-    
+
     @SuppressWarnings("unchecked")
     public static <T> ExtensionLoader<T> getExtensionLoader(Class<T> type) {
         if (type == null)
             throw new IllegalArgumentException("Extension type == null");
-        if(!type.isInterface()) {
+        if (!type.isInterface()) {
             throw new IllegalArgumentException("Extension type(" + type + ") is not interface!");
         }
         ExtensionLoader<T> loader = (ExtensionLoader<T>) EXTENSION_LOADERS.get(type);
@@ -39,31 +39,31 @@ public class ExtensionLoader<T> {
         }
         return loader;
     }
-    
+
     @SuppressWarnings("unchecked")
-	public T getExtension(String name) {
+    public T getExtension(String name) {
         if (name == null || name.length() == 0)
             throw new IllegalArgumentException("Extension name == null");
         return (T) EXTENSION_INSTANCES.get(name);
     }
-    
+
     public Set<String> getSupportedExtensions() {
         return EXTENSION_INSTANCES.keySet();
     }
-    
+
     private ExtensionLoader(Class<?> type) {
         this.type = type;
         EXTENSION_INSTANCES.putAll(loadExtensionClasses());
     }
-    
+
     private static ClassLoader findClassLoader() {
-        return  ExtensionLoader.class.getClassLoader();
+        return ExtensionLoader.class.getClassLoader();
     }
-    
+
     private Map<String, Object> loadExtensionClasses() {
         Map<String, Object> extensionClasses = new HashMap<String, Object>();
         try {
-        	Enumeration<java.net.URL> urls;
+            Enumeration<java.net.URL> urls;
             ClassLoader classLoader = findClassLoader();
             String fileName = EXTENSION_DIR + type.getName();
             if (classLoader != null) {
@@ -94,22 +94,22 @@ public class ExtensionLoader<T> {
                                 }
                             }
                         }
-                    }catch(IOException e){
-                    	logger.error("读取文件失败，路径 ： "+url);
-                    }finally{
-                    	reader.close();
+                    } catch (IOException e) {
+                        logger.error("读取文件失败，路径 ： " + url);
+                    } finally {
+                        reader.close();
                     }
                 }
             }
-		} catch (Throwable e) {
-			logger.error("Exception when load extension class(interface: "+type);
-		}
+        } catch (Throwable e) {
+            logger.error("Exception when load extension class(interface: " + type);
+        }
         return extensionClasses;
     }
-    
+
     @Override
     public String toString() {
         return this.getClass().getName() + "[" + type.getName() + "]";
     }
-    
+
 }

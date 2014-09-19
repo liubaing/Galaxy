@@ -1,105 +1,90 @@
 package com.liubaing.galaxy.entity;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
 import org.hibernate.validator.constraints.NotBlank;
+
+import javax.persistence.*;
+import java.util.Set;
 
 /**
  * 类说明:用户POJO
+ *
  * @author heshuai
  * @version Feb 24, 2012
- *
  */
 
 @Entity
 @Table(name = "u_user_tab")
-public class User extends BaseModel
-{
-	
-	private static final long serialVersionUID = 1132116198278001891L;
+public class User extends BaseModel {
 
-	@Id
-	@Column(name = "userid", nullable = false)
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer  id;       			//id主键
-	
-	@Column(name = "loginname", nullable = false)
-	private String username ;     		//用户名
-	
-	@Column(nullable = false)
-	private String password ;      		//密码
-	
-	@Column(name = "name")
-	private String name ;      			//姓名
-	
-	private String token;				//用户令牌
-	
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH, targetEntity = UserRole.class, mappedBy = "user")
-	private Set<UserRole> userRoles;
-	
-	public Integer getId() {
-		return id;
-	}
-	
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    private static final long serialVersionUID = 1132116198278001891L;
 
-	@NotBlank
-	public String getUsername() {
-		return username;
-	}
+    @Id
+    @Column(name = "userid", nullable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;                //id主键
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    @Column(name = "loginname", nullable = false)
+    private String username;            //用户名
 
-	public String getPassword() {
-		return password;
-	}
+    @Column(nullable = false)
+    private String password;            //密码
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    @Column(name = "name")
+    private String name;                //姓名
 
-	public String getName() {
-		return name;
-	}
+    private String token;                //用户令牌
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH, targetEntity = UserRole.class, mappedBy = "user")
+    private Set<UserRole> userRoles;
 
-	public String getToken() {
-		return token;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public void setToken(String token) {
-		this.token = token;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public void setUserRoles(Set<UserRole> userRoles) {
-		this.userRoles = userRoles;
-	}
+    @NotBlank
+    public String getUsername() {
+        return username;
+    }
 
-	public Set<UserRole> getUserRoles() {
-		return userRoles;
-	}
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public void setUserRoles(Set<UserRole> userRoles) {
+        this.userRoles = userRoles;
+    }
+
+    public Set<UserRole> getUserRoles() {
+        return userRoles;
+    }
 
 
 }

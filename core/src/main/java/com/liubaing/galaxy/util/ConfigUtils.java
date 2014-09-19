@@ -1,5 +1,8 @@
 package com.liubaing.galaxy.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -7,21 +10,18 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * 配置文件
  * 参考Ali团队Code
- * @author heshuai
  *
+ * @author heshuai
  */
 public class ConfigUtils {
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigUtils.class);
-	
-	private static volatile Properties PROPERTIES;
-    
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigUtils.class);
+
+    private static volatile Properties PROPERTIES;
+
     public static Properties getProperties() {
         if (PROPERTIES == null) {
             synchronized (ConfigUtils.class) {
@@ -39,32 +39,32 @@ public class ConfigUtils {
         }
         return PROPERTIES;
     }
-    
+
     public static void addProperties(Properties properties) {
         if (properties != null) {
             getProperties().putAll(properties);
         }
     }
-    
+
     public static void setProperties(Properties properties) {
         if (properties != null) {
             PROPERTIES = properties;
         }
     }
-    
+
     public static String getProperty(String key) {
         return getProperty(key, null);
     }
-        
+
     public static String getProperty(String key, String defaultValue) {
         String value = System.getProperty(key);
         if (value == null || value.length() == 0) {
-        	Properties properties = getProperties();
-        	value = properties.getProperty(key, defaultValue);
+            Properties properties = getProperties();
+            value = properties.getProperty(key, defaultValue);
         }
         return value;
     }
-    
+
     public static Properties loadProperties(String fileName) {
         Properties properties = new Properties();
         if (fileName.startsWith("/")) {
@@ -80,7 +80,7 @@ public class ConfigUtils {
             }
             return properties;
         }
-        
+
         List<java.net.URL> list = new ArrayList<java.net.URL>();
         try {
             Enumeration<java.net.URL> urls = ConfigUtils.class.getClassLoader().getResources(fileName);
@@ -91,8 +91,8 @@ public class ConfigUtils {
         } catch (Throwable t) {
             LOGGER.warn("Fail to load " + fileName + " file: " + t.getMessage(), t);
         }
-        
-        for(java.net.URL url : list) {
+
+        for (java.net.URL url : list) {
             try {
                 Properties p = new Properties();
                 InputStream input = url.openStream();
@@ -103,17 +103,19 @@ public class ConfigUtils {
                     } finally {
                         try {
                             input.close();
-                        } catch (Throwable t) {}
+                        } catch (Throwable t) {
+                        }
                     }
                 }
             } catch (Throwable e) {
                 LOGGER.warn("Fail to load " + fileName + " file from " + url + "(ingore this file): " + e.getMessage(), e);
             }
         }
-        
+
         return properties;
     }
 
-    private ConfigUtils() {}
+    private ConfigUtils() {
+    }
 
 }

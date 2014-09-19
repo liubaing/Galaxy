@@ -6,76 +6,74 @@ import java.util.Date;
 
 /**
  * 更新记录POJO
+ *
  * @author heshuai
  * @version 2012-10-29
- *
  */
-@Document(collection="updateRecord")
+@Document(collection = "updateRecord")
 public class Version extends BaseModel {
-	
-	private static final long serialVersionUID = -3791607982714225119L;
-	
-	public static final String UPLOAD_VIRTUAL_PATH = "";
-	
-	private static final Platform DEFAULT_PLATFORM = Platform.ANDROID;
-	
-	private int versionCode;
-	
-	private String versionName;
-	
-	private String Description;
-	
-	private String url;
-	
-	private Date Time = new Date();
-	
-	private Platform platform = DEFAULT_PLATFORM;
-	
-	public int getVersionCode() {
-		return versionCode;
-	}
 
-	public void setVersionCode(int versionCode) {
-		this.versionCode = versionCode;
-	}
+    private static final long serialVersionUID = -3791607982714225119L;
 
-	public String getVersionName() {
-		return versionName;
-	}
+    private static final Platform DEFAULT_PLATFORM = Platform.ANDROID;
 
-	public void setVersionName(String versionName) {
-		this.versionName = versionName;
-	}
+    private int versionCode;
 
-	public String getDescription() {
-		return Description;
-	}
+    private String versionName;
 
-	public void setDescription(String description) {
-		Description = description;
-	}
+    private String Description;
 
-	public String getUrl() {
-		return url;
-	}
+    private String url;
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
+    private Date Time = new Date();
 
-	public Date getTime() {
-		return Time;
-	}
+    private Platform platform = DEFAULT_PLATFORM;
 
-	public void setTime(Date time) {
-		Time = time;
-	}
+    public int getVersionCode() {
+        return versionCode;
+    }
 
-	public Platform getPlatform() {
-		return platform;
-	}
+    public void setVersionCode(int versionCode) {
+        this.versionCode = versionCode;
+    }
 
-	public void setPlatform(Platform platform) {
-		this.platform = platform;
-	}
+    public String getVersionName() {
+        return versionName;
+    }
+
+    public void setVersionName(String versionName) {
+        this.versionName = versionName;
+    }
+
+    public String getDescription() {
+        return Description;
+    }
+
+    public void setDescription(String description) {
+        Description = description;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public Date getTime() {
+        return Time;
+    }
+
+    public void setTime(Date time) {
+        Time = time;
+    }
+
+    public Platform getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(Platform platform) {
+        this.platform = platform;
+    }
 }

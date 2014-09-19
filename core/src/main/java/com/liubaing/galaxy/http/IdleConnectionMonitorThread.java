@@ -1,14 +1,14 @@
 package com.liubaing.galaxy.http;
 
-import java.util.concurrent.TimeUnit;
-
 import org.apache.http.conn.HttpClientConnectionManager;
 
+import java.util.concurrent.TimeUnit;
+
 public class IdleConnectionMonitorThread extends Thread {
-    
+
     private final HttpClientConnectionManager connMgr;
     private volatile boolean shutdown;
-    
+
     public IdleConnectionMonitorThread(HttpClientConnectionManager connMgr) {
         super();
         this.connMgr = connMgr;
@@ -31,12 +31,12 @@ public class IdleConnectionMonitorThread extends Thread {
             // terminate
         }
     }
-    
+
     public void shutdown() {
         shutdown = true;
         synchronized (this) {
             notifyAll();
         }
     }
-    
+
 }

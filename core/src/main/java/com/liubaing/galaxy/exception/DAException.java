@@ -6,23 +6,22 @@ package com.liubaing.galaxy.exception;
  */
 public class DAException extends AppException {
 
-	private static final long serialVersionUID = 5570978578575344671L;
-	private int error_code = 1;
+    private static final long serialVersionUID = 5570978578575344671L;
+    private int error_code = 1;
 
-	public DAException()
-	{
-		super();
-	}
+    public DAException() {
+        super();
+    }
 
-	public DAException(String msg){
-		super(msg);
-	}
-	
-	public DAException(Throwable cause) {
-		super(cause);
-	}
-	
-	public DAException(String msg, Throwable cause) {
-		super(msg, cause);
-	}
+    public DAException(String msg) {
+        super(msg);
+    }
+
+    public DAException(Throwable cause) {
+        super(cause);
+    }
+
+    public DAException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }
