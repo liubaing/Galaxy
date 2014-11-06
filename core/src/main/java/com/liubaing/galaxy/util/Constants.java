@@ -18,4 +18,6 @@ public class Constants {
 
     public static final int DEFAULT_RESULTS_PER_PAGE = 10;
 
+    public static final String DEFAULT_CHARSET = "UTF-8";
+
 }

@@ -7,7 +7,6 @@ package com.liubaing.galaxy.exception;
 public class CachedException extends AppException {
 
     private static final long serialVersionUID = 1996646258389107673L;
-    private int error_code = 2;
 
     public CachedException() {
         super();

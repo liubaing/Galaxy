@@ -18,15 +18,11 @@ public class HttpParamUtils {
     public final static int READ_TIMEOUT = 6000;
 
     private static final String[] USER_AGENT = {
-            "Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:25.0) Gecko/20100101 Firefox/25.0",
-            "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36",
-            "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko",
-            "Windows-RSS-Platform/2.0 (MSIE 8.0; Windows NT 6.0)",
-            "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_2_1 like Mac OS X; zh-cn) AppleWebKit/533.17.9 (KHTML, like Gecko) Mobile/8C148"
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"
     };
 
     public static String randomUserAgent() {
-
         return USER_AGENT[new Random().nextInt(USER_AGENT.length)];
     }
 
