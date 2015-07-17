@@ -2,27 +2,25 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxTotal" value="${redis.maxActive}"/>
-        <property name="maxIdle" value="${redis.maxIdle}"/>
-        <property name="minIdle" value="${redis.minIdle}"/>
-        <property name="maxWaitMillis" value="${redis.maxWait}"/>
-        <property name="testOnBorrow" value="${redis.testOnBorrow}"/>
-        <property name="testWhileIdle" value="${redis.testWhileIdle}"/>
-        <property name="numTestsPerEvictionRun" value="${redis.numTestsPerEvictionRun}"/>
-        <property name="timeBetweenEvictionRunsMillis" value="${redis.timeBetweenEvictionRunsMillis}"/>
+    <bean id="redisSentinelConfiguration" class="org.springframework.data.redis.connection.RedisSentinelConfiguration">
+        <constructor-arg name="master" value="${redis.master.name}"/>
+        <constructor-arg name="sentinelHostAndPorts">
+            <set>
+                <value>${redis.sentinel1}</value>
+                <value>${redis.sentinel2}</value>
+                <value>${redis.sentinel3}</value>
+            </set>
+        </constructor-arg>
     </bean>
 
-    <bean id="jedisConnFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-          p:usePool="true" p:poolConfig-ref="jedisPoolConfig" p:hostName="${redis.addr}" p:port="${redis.port}"/>
-
-    <!-- use jdk serializer -->
-    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
-          p:connectionFactory-ref="jedisConnFactory">
-        <property name="keySerializer">
-            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
-        </property>
+    <bean id="jedisConnFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <constructor-arg name="sentinelConfig" ref="redisSentinelConfiguration" />
     </bean>
+
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
+          p:connectionFactory-ref="jedisConnFactory"/>
+
 </beans>

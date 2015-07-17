@@ -1,6 +1,5 @@
 package com.liubaing.galaxy.web.support;
 
-import com.liubaing.galaxy.exception.DAException;
 import com.liubaing.galaxy.web.vo.ResponseVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +19,6 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ResponseVo handleException(Exception e) {
         logger.error(e.getMessage(), e);
-        if (e instanceof DAException) {
-            return new ResponseVo(ResponseVo.ErrorCode.SYSTEM_ERROR.intValue(), e.getMessage());
-        }
         return new ResponseVo(ResponseVo.ErrorCode.SYSTEM_ERROR);
     }
 }

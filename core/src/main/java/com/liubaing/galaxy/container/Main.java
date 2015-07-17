@@ -62,7 +62,7 @@ public class Main {
                 container.start();
                 logger.info("Serivce " + container.getClass().getSimpleName() + " started!");
             }
-            System.out.println(new SimpleDateFormat("[yyyy-MM-dd HH:mm:ss]").format(new Date()) + " task server started!");
+            System.out.println(new SimpleDateFormat("[yyyy-MM-dd HH:mm:ss]").format(new Date()) + " worker server started!");
         } catch (RuntimeException e) {
             e.printStackTrace();
             logger.error(e.getMessage(), e);

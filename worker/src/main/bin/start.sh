@@ -39,6 +39,6 @@ echo -e "Starting the $SERVER_NAME ...\c"
 nohup java $JAVA_OPTS $JAVA_MEM_OPTS -classpath $CONF_DIR:$LIB_JARS -Dlogpath=$LOGS_DIR com.liubaing.galaxy.container.Main > $STDOUT_FILE 2>&1 &
 
 echo "OK!"
-PIDS=`ps -ef | grep java | grep "$DEPLOY_DIR" | awk '{print $2}'`
+PIDS=`ps -ef | grep java | grep "$DEPLOY_DIR" | grep -v "grep" | awk '{print $2}'`
 echo "PID: $PIDS"
 echo "STDOUT: $STDOUT_FILE"

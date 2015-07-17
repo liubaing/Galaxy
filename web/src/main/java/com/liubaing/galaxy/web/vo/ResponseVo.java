@@ -1,6 +1,7 @@
 package com.liubaing.galaxy.web.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.liubaing.galaxy.web.support.SpringContext;
 
 public class ResponseVo<T> {
 
@@ -10,40 +11,61 @@ public class ResponseVo<T> {
     public String errorMsg;
     public T data;
 
-    public ResponseVo(ErrorCode code) {
-        this.errorMsg = code.info;
-        this.errorCode = code.intValue();
+    public static <T> ResponseVo<T> newResponse() {
+        return new ResponseVo<T>();
     }
 
-    public ResponseVo<T> setData(T data) {
-        this.data = data;
-        return this;
+    private ResponseVo() {
     }
 
-    public ResponseVo() {
-        this.errorMsg = "操作成功";
-    }
-
-    public ResponseVo(int errorCode, String errorMsg) {
+    private ResponseVo(int errorCode, String errorMsg) {
         this.errorCode = errorCode;
         this.errorMsg = errorMsg;
     }
 
+    public ResponseVo(ErrorCode code) {
+        this(code.intValue(), SpringContext.getMessage(code.key));
+    }
+
+    public ResponseVo<T> setData(T data) {
+        if (data == null) {
+            this.buildError(ErrorCode.EMPTY_CONTENT);
+        } else {
+            this.data = data;
+        }
+        return this;
+    }
+
+    public ResponseVo buildError(ErrorCode code) {
+        this.errorMsg = SpringContext.getMessage(code.key);
+        this.errorCode = code.intValue();
+        return this;
+    }
+
+    /**
+     * 错误信息
+     * 1xxx 请求参数异常
+     * 2xxx 请求响应无结果
+     * 3xxx 请求过程中服务异常无法正常处理
+     *
+     * @author heshuai
+     */
     public enum ErrorCode {
 
-        SESSION_EXPIRED(1000, "账户信息过期，请重新登录"),
-        INVALID_PARAM(1001, "无效参数"),
+        SESSION_EXPIRED(1000, "session.expired"),
+        DISABLE_ACCOUNT(1100, "disable.account"),
+        PASSWORD_INCORRECT(1006, "password.incorrect"),
 
-        EMPTY_CONTENT(2001, "无内容"),
+        EMPTY_CONTENT(2001, "empty.content"),
 
-        SYSTEM_ERROR(3001, "系统异常");
+        SYSTEM_ERROR(3001, "system.error");
 
         public int value;
-        public String info;
+        public String key;
 
-        ErrorCode(int value, String info) {
+        ErrorCode(int value, String key) {
             this.value = value;
-            this.info = info;
+            this.key = key;
         }
 
         public final int intValue() {

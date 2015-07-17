@@ -1,34 +1,28 @@
 package com.liubaing.galaxy.http;
 
 import com.alibaba.fastjson.JSON;
-import org.apache.http.*;
-import org.apache.http.client.HttpRequestRetryHandler;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.http.Consts;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.config.ConnectionConfig;
 import org.apache.http.config.MessageConstraints;
 import org.apache.http.config.SocketConfig;
-import org.apache.http.conn.ConnectionPoolTimeoutException;
-import org.apache.http.conn.routing.HttpRoute;
+import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.SSLException;
-import java.io.IOException;
-import java.io.InterruptedIOException;
-import java.net.UnknownHostException;
 import java.nio.charset.CodingErrorAction;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author heshuai
@@ -37,22 +31,26 @@ public class HttpClientUtils {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(HttpClientUtils.class);
 
-    private static CloseableHttpClient httpClient = null;
-
+    private static final CloseableHttpClient HTTP_CLIENT;
+    private static final RequestConfig REQUEST_CONFIG;
+    /**
+     * 获取连接的最大等待时间(单位毫秒)
+     */
+    private final static int WAIT_TIMEOUT = 1000;
+    /**
+     * 连接超时时间
+     */
+    private final static int CONNECT_TIMEOUT = 1000;
+    /**
+     * 读取超时时间
+     */
+    private final static int READ_TIMEOUT = 1000;
     /**
      * 最大连接数
      */
-    public final static int MAX_TOTAL_CONNECTIONS = 24;
-    /**
-     * 指定路由最大连接数
-     */
-    public final static int MAX_ROUTE_CONNECTIONS = 12;
-
-    private HttpClientUtils() {
-    }
+    public final static int MAX_TOTAL_CONNECTIONS = 128;
 
     static {
-
         PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager();
         SocketConfig socketConfig = SocketConfig.custom().setTcpNoDelay(true).build();
         connManager.setDefaultSocketConfig(socketConfig);
@@ -68,49 +66,102 @@ public class HttpClientUtils {
                 .build();
         connManager.setDefaultConnectionConfig(connectionConfig);
         connManager.setMaxTotal(MAX_TOTAL_CONNECTIONS);
-        connManager.setDefaultMaxPerRoute(MAX_TOTAL_CONNECTIONS - MAX_ROUTE_CONNECTIONS);
+        connManager.setDefaultMaxPerRoute(MAX_TOTAL_CONNECTIONS);
 
-        httpClient = HttpClients.custom()
+        REQUEST_CONFIG = RequestConfig.custom()
+                .setStaleConnectionCheckEnabled(false)
+                .setSocketTimeout(READ_TIMEOUT)
+                .setConnectTimeout(CONNECT_TIMEOUT)
+                .setConnectionRequestTimeout(WAIT_TIMEOUT).build();
+
+        HTTP_CLIENT = HttpClients.custom()
                 .setConnectionManager(connManager)
+                .setDefaultRequestConfig(REQUEST_CONFIG)
+                .disableCookieManagement()
+                .disableAutomaticRetries()
                 .build();
 
-        new IdleConnectionMonitorThread(connManager).start();
+        final ConnectionMonitorThread closedConnection = new ConnectionMonitorThread(connManager);
+        closedConnection.setDaemon(true);
+        closedConnection.setContextClassLoader(null);
+        closedConnection.start();
 
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                try {
+                    closedConnection.interrupt();
+                    closedConnection.shutdown();
+                    HTTP_CLIENT.close();
+                } catch (Exception e) {
+                    //ignore
+                }
+            }
+        });
     }
 
-    public static byte[] invokeGet(String url, HttpContext context) {
-        RequestConfig requestConfig = RequestConfig.custom()
-                .setSocketTimeout(HttpParamUtils.READ_TIMEOUT)
-                .setConnectTimeout(HttpParamUtils.CONNECT_TIMEOUT)
-                .setConnectionRequestTimeout(HttpParamUtils.WAIT_TIMEOUT).build();
+    private HttpClientUtils() {
+    }
 
-        HttpGet get = new HttpGet(url);
-        get.setConfig(requestConfig);
-        get.addHeader(HTTP.USER_AGENT, HttpParamUtils.randomUserAgent());
+    /**
+     * 关闭无效链接
+     */
+    private static class ConnectionMonitorThread extends Thread {
+
+        private final HttpClientConnectionManager connMgr;
+        private volatile boolean shutdown;
+
+        public ConnectionMonitorThread(HttpClientConnectionManager connMgr) {
+            super();
+            this.connMgr = connMgr;
+        }
+
+        @Override
+        public void run() {
+            try {
+                while (!shutdown) {
+                    synchronized (this) {
+                        wait(4 * 1000);
+                        connMgr.closeExpiredConnections();
+                        connMgr.closeIdleConnections(8, TimeUnit.SECONDS);
+                    }
+                }
+            } catch (InterruptedException ex) {
+                // terminate
+            }
+        }
+
+        public void shutdown() {
+            shutdown = true;
+            synchronized (this) {
+                notifyAll();
+            }
+        }
+    }
+
+    private static byte[] invoke(HttpRequestBase method) {
+        String url = method.getURI().toString();
         try {
-            CloseableHttpResponse response = httpClient.execute(get, context);
+            method.setConfig(REQUEST_CONFIG);
+            CloseableHttpResponse response = HTTP_CLIENT.execute(method);
             final StatusLine statusLine = response.getStatusLine();
             final HttpEntity entity = response.getEntity();
             try {
-                if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
+                if (statusLine.getStatusCode() >= HttpStatus.SC_BAD_REQUEST) {
                     EntityUtils.consumeQuietly(entity);
-                    LOGGER.error(url + "\n 请求异常，状态值： " + statusLine.getStatusCode());
+                    LOGGER.warn("[" + url + "] 请求失败，状态值 [" + statusLine.getStatusCode() + "]");
                 } else if (entity != null) {
                     return EntityUtils.toByteArray(entity);
                 }
             } finally {
-                //关闭HttpConnect
-                //response.close();
                 EntityUtils.consumeQuietly(entity);
             }
         } catch (Exception e) {
-            LOGGER.error(String.format("[HttpUtils Get]invoke get error, url:%s", url), e);
+            LOGGER.error("[" + url + "] 请求异常，原因 [" + ExceptionUtils.getRootCauseMessage(e) + " ]");
         }
         return null;
     }
 
-    public static <T> T invokeGet(String url, Class<T> clazz, HttpContext context) {
-        byte[] resp = invokeGet(url, context);
+    private static <T> T parse(byte[] resp, Class<T> clazz) {
         if (resp != null) {
             try {
                 return JSON.parseObject(resp, clazz);
@@ -121,4 +172,11 @@ public class HttpClientUtils {
         return null;
     }
 
+    public static <T> T get(String url, Class<T> clazz) {
+        return parse(get(url), clazz);
+    }
+
+    public static byte[] get(String url) {
+        return invoke(new HttpGet(url));
+    }
 }

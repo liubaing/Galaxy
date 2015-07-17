@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liubaing.galaxy.persistence.AccountMapper">
+
+    <select id="getAccountByEmail" resultType="Account">
+        SELECT
+            account_id   AS accountId,
+            email,
+            password,
+            state,
+            date_created AS createDate,
+            date_edited  AS editDate
+        FROM t_cms_account
+        WHERE email = #{email}
+    </select>
+
+    <update id="updateAccount" parameterType="Account">
+        UPDATE t_cms_account
+        <set>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="state != null">
+                state = #{state},
+            </if>
+            date_edited = current_timestamp
+        </set>
+        WHERE account_id = #{accountId}
+    </update>
+
+    <insert id="insertAccount" parameterType="Account">
+        INSERT INTO t_cms_account
+        (account_id, email, password, date_created, date_edited)
+        VALUES
+            (#{accountId}, #{email}, #{password}, #{createDate}, #{editDate})
+    </insert>
+
+</mapper>
