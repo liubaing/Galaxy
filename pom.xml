@@ -270,4 +270,14 @@
             </properties>
         </profile>
     </profiles>
+
+    <repositories>
+        <repository>
+            <id>jboss</id>
+            <url>https://repository.jboss.org/nexus/content/groups/public-jboss</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>

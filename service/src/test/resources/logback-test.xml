@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>[%-5level][%d{HH:mm:ss}] - [%logger{15}] - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <logger name="org.springframework.jdbc.datasource.DataSourceTransactionManager" level="DEBUG"/>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>
