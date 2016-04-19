@@ -1,17 +1,16 @@
 package com.liubaing.galaxy.persistence;
 
-
 import com.liubaing.galaxy.entity.Account;
+
+import java.util.Map;
 
 /**
  * @author heshuai
  */
 public interface AccountMapper {
 
-    Account getAccountByEmail(String email);
+    Account getAccount(Map<String, Object> param);
 
     void insertAccount(Account account);
-
-    void updateAccount(Account account);
 
 }

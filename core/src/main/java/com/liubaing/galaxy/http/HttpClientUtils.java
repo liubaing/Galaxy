@@ -36,15 +36,15 @@ public class HttpClientUtils {
     /**
      * 获取连接的最大等待时间(单位毫秒)
      */
-    private final static int WAIT_TIMEOUT = 1000;
+    private final static int WAIT_TIMEOUT = 200;
     /**
      * 连接超时时间
      */
-    private final static int CONNECT_TIMEOUT = 1000;
+    private final static int CONNECT_TIMEOUT = 200;
     /**
      * 读取超时时间
      */
-    private final static int READ_TIMEOUT = 1000;
+    private final static int READ_TIMEOUT = 600;
     /**
      * 最大连接数
      */

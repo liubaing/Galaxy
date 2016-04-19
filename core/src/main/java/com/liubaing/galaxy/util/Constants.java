@@ -15,9 +15,12 @@ public class Constants {
     public static final String HIDE_KEY_PREFIX = ".";
     public static final String SINGLE_QUOTES = "'";
     public static final String UNDERLINE = "_";
+    public static final String DOT_SEPARATOR = ".";
 
     public static final String DEFAULT_BOOT_PROPERTIES = "bootstrap.properties";
 
     public static final String DEFAULT_CHARSET = "UTF-8";
+
+    public static final String ACCOUNT_KEY = "_u";
 
 }

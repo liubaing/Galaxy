@@ -2,8 +2,8 @@ package com.liubaing.galaxy.container;
 
 public interface Container {
 
-    public void start();
+    void start();
 
-    public void stop();
+    void stop();
 
 }

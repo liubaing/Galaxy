@@ -9,15 +9,20 @@ import java.util.Date;
  */
 public class Account {
 
-    public String accountId;
+    public int id;
     public String email;
     public String password;
+    public Double balance;
+    public String name;
+    public String phone;
+    public Integer state;
     public Date createDate;
     public Date editDate;
-    public int state;
 
     public enum State {
+
         DISABLE(0), AVAILABLE(1);
+
         int code;
 
         State(int code) {

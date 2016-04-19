@@ -54,7 +54,10 @@ public class ResponseVo<T> {
 
         SESSION_EXPIRED(1000, "session.expired"),
         DISABLE_ACCOUNT(1100, "disable.account"),
+        INCORRECT_VERIFICATION_CODE(1002, "incorrect.verify.code"),
         PASSWORD_INCORRECT(1006, "password.incorrect"),
+        INVALID_EMAIL(1205, "email.not.exist"),
+        EMAIL_ALREADY_EXISTS(1308, "email.already.exists"),
 
         EMPTY_CONTENT(2001, "empty.content"),
 

@@ -6,6 +6,7 @@ import com.liubaing.galaxy.web.vo.ResponseVo;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.entity.ContentType;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.util.WebUtils;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +20,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
             HttpServletResponse response,
             Object handler) throws Exception {
 
-        if (request.getHeader("") == null) {
+        if (WebUtils.getSessionAttribute(request, Constants.ACCOUNT_KEY) == null) {
             ServletOutputStream out = response.getOutputStream();
             IOUtils.write(JSON.toJSONString(new ResponseVo(ResponseVo.ErrorCode.SESSION_EXPIRED)), out, Constants.DEFAULT_CHARSET);
             response.setContentType(ContentType.APPLICATION_JSON.withCharset(Constants.DEFAULT_CHARSET).toString());

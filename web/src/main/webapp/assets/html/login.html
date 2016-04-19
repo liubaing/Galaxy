@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <title>Galaxy-登录</title>
+    <link rel="stylesheet" href="/assets/style/bootstrap.css">
+    <script type="text/javascript" src="/assets/script/jquery.js"></script>
+    <script type="text/javascript" src="/assets/script/common.js"></script>
+    <script type="text/javascript" src="/assets/script/session.js"></script>
+    <script type="text/javascript" src="/assets/script/jquery.serializejson.min.js"></script>
+</head>
+<body>
+<div class="container">
+
+    <div class="page-header">
+        <h3>登录</h3>
+    </div>
+
+    <form class="form-horizontal" role="form">
+        <div class="form-group">
+            <div class="col-sm-3">
+                <input type="email" name="email" class="form-control" id="inputEmail" placeholder="邮箱" value="">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-3">
+                <input type="password" name="password" class="form-control" id="inputPassword" placeholder="密码"
+                       value="">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-3">
+                <input type="text" name="verifyCode" class="form-control" id="inputVerifyCode" placeholder="验证码"
+                       value="">
+            </div>
+            <div class="col-sm-1">
+                <a href="#">
+                    <img alt="单击更换图片" id="captchaImage"
+                         onclick="this.src='/session/captchaImage?t=' + new Date().getTime();"
+                         src="/session/captchaImage" border="0"/>
+                </a>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-3">
+                <button type="submit" class="btn btn-info">登录</button>
+            </div>
+        </div>
+    </form>
+
+    <hr>
+
+    <footer>
+        <p>© 何帅 2016</p>
+    </footer>
+
+    <script>
+        util = {
+            mRegExp: {
+                email: /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/,
+                pwd: /^[a-zA-Z0-9][a-zA-Z0-9]{6,14}[a-zA-Z0-9]$/
+            },
+            validate: {
+                checker: function () {
+                    if (!util.mRegExp.email.test($("#inputEmail").val())) {
+                        alert("请输入有效邮箱");
+                        return false
+                    }
+                    var p1 = $("#inputPassword").val();
+                    if (!util.mRegExp.pwd.test(p1)) {
+                        alert("请输入有效密码");
+                        return false
+                    }
+                    var verifyCode = $("#inputVerifyCode").val();
+                    if (verifyCode == "" || verifyCode.replace(/\s/g, "").length != 4) {
+                        alert("请输入4位有效验证码");
+                        return false
+                    }
+                    return true
+                }
+            }
+        };
+        $(function () {
+            $('form').submit(function (e) {
+                e.preventDefault();
+                if (util.validate.checker()) {
+                    session.account.login(function(result) {
+                        alert('登录成功！');
+                    });
+                }
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

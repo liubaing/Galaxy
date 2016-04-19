@@ -4,16 +4,26 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.liubaing.galaxy.persistence.AccountMapper">
 
-    <select id="getAccountByEmail" resultType="Account">
+    <select id="getAccount" resultType="Account">
         SELECT
-            account_id   AS accountId,
-            email,
-            password,
-            state,
-            date_created AS createDate,
-            date_edited  AS editDate
+        id,
+        email,
+        password,
+        state,
+        balance,
+        name,
+        phone,
+        date_created AS createDate,
+        date_edited  AS editDate
         FROM t_cms_account
-        WHERE email = #{email}
+        <where>
+            <if test="email != null">
+                email = #{email}
+            </if>
+            <if test="accountId != null">
+                id = #{accountId}
+            </if>
+        </where>
     </select>
 
     <update id="updateAccount" parameterType="Account">
@@ -25,16 +35,26 @@
             <if test="state != null">
                 state = #{state},
             </if>
-            date_edited = current_timestamp
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="balance != null">
+                balance = #{balance},
+            </if>
         </set>
         WHERE account_id = #{accountId}
     </update>
 
-    <insert id="insertAccount" parameterType="Account">
+    <insert id="insertAccount" parameterType="me.shashalu.ads.cms.domain.Account">
+        <![CDATA[
         INSERT INTO t_cms_account
-        (account_id, email, password, date_created, date_edited)
+        (email, password, name, phone, state, balance, date_created, date_edited)
         VALUES
-            (#{accountId}, #{email}, #{password}, #{createDate}, #{editDate})
+            (#{email}, #{password}, #{name}, #{phone}, #{state}, #{balance},#{createDate}, #{editDate})
+        ]]>
     </insert>
 
 </mapper>

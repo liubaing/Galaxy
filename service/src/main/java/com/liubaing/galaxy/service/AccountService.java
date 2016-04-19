@@ -2,9 +2,15 @@ package com.liubaing.galaxy.service;
 
 import com.liubaing.galaxy.entity.Account;
 import com.liubaing.galaxy.persistence.AccountMapper;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author heshuai
@@ -16,7 +22,24 @@ public class AccountService {
     @Autowired
     private AccountMapper accountMapper;
 
-    public Account getByEmail(String email) {
-        return accountMapper.getAccountByEmail(StringUtils.lowerCase(email));
+    public Account getByEmail(final String email) {
+        Map<String, Object> param = new HashMap<String, Object>() {{
+            put("email", StringUtils.lowerCase(email));
+        }};
+        return accountMapper.getAccount(param);
+    }
+
+    public Account getByAccountId(final String accountId) {
+        Map<String, Object> param = new HashMap<String, Object>() {{
+            put("accountId", accountId);
+        }};
+        return accountMapper.getAccount(param);
+    }
+
+    public void save(Account account) {
+        account.createDate = new Date();
+        account.balance = NumberUtils.DOUBLE_ZERO;
+        account.password = DigestUtils.md5Hex(account.password);
+        accountMapper.insertAccount(account);
     }
 }

@@ -6,8 +6,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
-@Component
-public class SpringContext implements ApplicationContextAware {
+public final class SpringContext implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext = null;
 
@@ -20,14 +19,16 @@ public class SpringContext implements ApplicationContextAware {
     /**
      * 获取指定的实例
      * 常规下，不建议使用
-     * @param name 实例别名
-     * @return 需转型
+     *
+     * @param requiredType 类，接口
+     * @return 范型，无需转换
      */
-    public static Object getBean(String name) {
-        return applicationContext.getBean(name);
+    public <T> T getBean(Class<T> requiredType) {
+        return applicationContext.getBean(requiredType);
     }
 
     public static String getMessage(String code) {
         return applicationContext.getMessage(code, null, LocaleContextHolder.getLocale());
     }
+
 }
