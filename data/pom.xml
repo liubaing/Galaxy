@@ -6,38 +6,17 @@
 	<parent>
 		<groupId>com.liubaing</groupId>
 		<artifactId>galaxy</artifactId>
-		<version>1.2.0-SNAPSHOT</version>
-	</parent>
-	<artifactId>galaxy-data</artifactId>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+		<version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>galaxy-data</artifactId>
+    <packaging>jar</packaging>
+
 	<dependencies>
         <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-mongodb</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis-spring</artifactId>
-            <version>1.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>3.2.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
+            <groupId>com.liubaing</groupId>
+            <artifactId>galaxy-domain</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.data</groupId>
@@ -48,9 +27,20 @@
             <artifactId>jedis</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.liubaing</groupId>
-            <artifactId>galaxy-domain</artifactId>
-            <version>${project.parent.version}</version>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
         </dependency>
 	</dependencies>
 </project>

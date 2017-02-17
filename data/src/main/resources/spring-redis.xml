@@ -2,25 +2,64 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-            http://www.springframework.org/schema/beans/spring-beans.xsd">
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <bean id="redisSentinelConfiguration" class="org.springframework.data.redis.connection.RedisSentinelConfiguration">
-        <constructor-arg name="master" value="${redis.master.name}"/>
-        <constructor-arg name="sentinelHostAndPorts">
-            <set>
-                <value>${redis.sentinel1}</value>
-                <value>${redis.sentinel2}</value>
-                <value>${redis.sentinel3}</value>
-            </set>
-        </constructor-arg>
+    <context:property-placeholder ignore-resource-not-found="true"
+                                  location="classpath*:config-redis.properties,
+                                  classpath:config-redis-cluster-pool.properties,
+                                  classpath:config-redis-pool.properties"
+                                  file-encoding="UTF-8"
+                                  ignore-unresolvable="true"/>
+
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxTotal" value="${jedis.pool.max-total}"/>
+        <property name="maxIdle" value="${jedis.pool.max-idle}"/>
+        <property name="maxWaitMillis" value="${jedis.pool.max-wait-millis}"/>
+        <property name="testOnBorrow" value="${jedis.pool.test-on-borrow}"/>
     </bean>
 
-    <bean id="jedisConnFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
-        <constructor-arg name="sentinelConfig" ref="redisSentinelConfiguration" />
-    </bean>
+    <bean id="jedisConnectionFactory"
+          class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+          p:hostName="${redis.hostname}"
+          p:port="${redis.port}"
+          p:timeout="500"
+          p:poolConfig-ref="jedisPoolConfig"/>
 
     <bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
-          p:connectionFactory-ref="jedisConnFactory"/>
+          p:connectionFactory-ref="jedisConnectionFactory"/>
+
+    <util:list id="listOfNodes">
+        <value>ads-redis1.nhorizon.in:6391</value>
+        <value>ads-redis2.nhorizon.in:6392</value>
+        <value>ads-redis3.nhorizon.in:6393</value>
+    </util:list>
+
+    <bean id="clusterConfig"
+          class="org.springframework.data.redis.connection.RedisClusterConfiguration">
+        <constructor-arg name="clusterNodes" ref="listOfNodes"/>
+        <property name="maxRedirects" value="${redis.cluster.max-redirects}"/>
+    </bean>
+
+    <bean id="jedisClusterPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxTotal" value="${jedis.cluster.pool.max-total}"/>
+        <property name="maxIdle" value="${jedis.cluster.pool.max-idle}"/>
+        <property name="maxWaitMillis" value="${jedis.cluster.pool.max-wait-millis}"/>
+        <property name="testOnBorrow" value="${jedis.cluster.pool.test-on-borrow}"/>
+    </bean>
+
+    <bean id="jedisClusterConnectionFactory"
+          class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+          p:timeout="500">
+        <constructor-arg name="clusterConfig" ref="clusterConfig"/>
+        <constructor-arg name="poolConfig" ref="jedisClusterPoolConfig"/>
+    </bean>
+
+    <bean id="redisClusterTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
+          p:connectionFactory-ref="jedisClusterConnectionFactory"/>
 
 </beans>

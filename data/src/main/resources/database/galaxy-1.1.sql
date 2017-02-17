@@ -1,7 +1,7 @@
 create database galaxy default charset utf8;
 
 DROP TABLE IF EXISTS `t_galaxy_account`;
-CREATE TABLE `t_cms_account` (
+CREATE TABLE `t_galaxy_account` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `email` varchar(100) NOT NULL DEFAULT '' COMMENT '邮箱',
   `password` varchar(50) NOT NULL DEFAULT '' COMMENT '密码',
