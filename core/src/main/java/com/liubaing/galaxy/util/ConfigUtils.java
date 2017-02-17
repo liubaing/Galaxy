@@ -16,39 +16,23 @@ import java.util.Properties;
  *
  * @author heshuai
  */
-public class ConfigUtils {
+public final class ConfigUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigUtils.class);
 
-    private static volatile Properties PROPERTIES;
+    private static Properties PROPERTIES = new Properties();
+
+    static {
+        ConfigUtils.loadProperties(Constants.DEFAULT_BOOT_PROPERTIES);
+    }
 
     public static Properties getProperties() {
-        if (PROPERTIES == null) {
-            synchronized (ConfigUtils.class) {
-                if (PROPERTIES == null) {
-                    String path = System.getProperty(Constants.DEFAULT_BOOT_PROPERTIES);
-                    if (path == null || path.length() == 0) {
-                        path = System.getenv(Constants.DEFAULT_BOOT_PROPERTIES);
-                        if (path == null || path.length() == 0) {
-                            path = Constants.DEFAULT_BOOT_PROPERTIES;
-                        }
-                    }
-                    PROPERTIES = ConfigUtils.loadProperties(path);
-                }
-            }
-        }
         return PROPERTIES;
     }
 
     public static void addProperties(Properties properties) {
         if (properties != null) {
             getProperties().putAll(properties);
-        }
-    }
-
-    public static void setProperties(Properties properties) {
-        if (properties != null) {
-            PROPERTIES = properties;
         }
     }
 
@@ -65,53 +49,43 @@ public class ConfigUtils {
         return value;
     }
 
+    /**
+     * 加载配置文件，允许重复加载
+     *
+     * @param fileName 相对路径于classpath，同样支持绝对路径
+     */
     public static Properties loadProperties(String fileName) {
         Properties properties = new Properties();
-        if (fileName.startsWith("/")) {
+        LOGGER.debug("Loading properties file resource [{}]", fileName);
+        if (fileName.startsWith(Constants.PATH_SEPARATOR)) {
+            try (FileInputStream input = new FileInputStream(fileName)) {
+                properties.load(input);
+            } catch (Throwable e) {
+                LOGGER.warn("Failed to load [" + fileName + "] file" + e.getMessage(), e);
+            }
+        } else {
+            List<java.net.URL> list = new ArrayList<>();
             try {
-                FileInputStream input = new FileInputStream(fileName);
-                try {
-                    properties.load(input);
-                } finally {
-                    input.close();
+                Enumeration<java.net.URL> urls = ConfigUtils.class.getClassLoader().getResources(fileName);
+                while (urls.hasMoreElements()) {
+                    list.add(urls.nextElement());
                 }
             } catch (Throwable e) {
-                LOGGER.warn("Failed to load " + fileName + " file from " + fileName + "(ingore this file): " + e.getMessage(), e);
+                LOGGER.warn("Fail to load [" + fileName + "] file" + e.getMessage(), e);
             }
-            return properties;
-        }
-
-        List<java.net.URL> list = new ArrayList<java.net.URL>();
-        try {
-            Enumeration<java.net.URL> urls = ConfigUtils.class.getClassLoader().getResources(fileName);
-            list = new ArrayList<java.net.URL>();
-            while (urls.hasMoreElements()) {
-                list.add(urls.nextElement());
-            }
-        } catch (Throwable t) {
-            LOGGER.warn("Fail to load " + fileName + " file: " + t.getMessage(), t);
-        }
-
-        for (java.net.URL url : list) {
-            try {
-                Properties p = new Properties();
-                InputStream input = url.openStream();
-                if (input != null) {
-                    try {
+            for (java.net.URL url : list) {
+                try {
+                    try (InputStream input = url.openStream()) {
+                        Properties p = new Properties();
                         p.load(input);
                         properties.putAll(p);
-                    } finally {
-                        try {
-                            input.close();
-                        } catch (Throwable t) {
-                        }
                     }
+                } catch (Throwable e) {
+                    LOGGER.warn("Fail to load " + fileName + " file from " + url + "(ingore this file): " + e.getMessage(), e);
                 }
-            } catch (Throwable e) {
-                LOGGER.warn("Fail to load " + fileName + " file from " + url + "(ingore this file): " + e.getMessage(), e);
             }
         }
-
+        addProperties(properties);
         return properties;
     }
 

@@ -3,6 +3,7 @@ package com.liubaing.galaxy.util;
 import com.google.common.hash.Hashing;
 import org.apache.commons.lang3.StringUtils;
 
+import java.nio.charset.Charset;
 import java.util.UUID;
 
 /**
@@ -20,6 +21,6 @@ public class IDGenerator {
         if (StringUtils.isEmpty(id)) {
             return org.apache.commons.lang3.math.NumberUtils.INTEGER_ZERO;
         }
-        return Hashing.murmur3_32().hashString(id).asInt();
+        return Hashing.murmur3_32().hashString(id, Charset.defaultCharset()).asInt();
     }
 }

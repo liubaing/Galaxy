@@ -8,8 +8,6 @@ package com.liubaing.galaxy.exception;
  */
 public class AppException extends RuntimeException {
 
-    private static final long serialVersionUID = -2837703628855700262L;
-
     public AppException() {
         super();
     }
