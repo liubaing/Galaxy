@@ -14,11 +14,15 @@
 		http://www.springframework.org/schema/util
 		http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <task:annotation-driven/>
+    <task:executor id="taskExecutor" pool-size="3"/>
+    <task:annotation-driven executor="taskExecutor"/>
 
     <context:component-scan base-package="com.liubaing.galaxy.service"/>
 
-    <context:property-placeholder location="classpath:database.properties,classpath:web-config.properties"/>
+    <context:property-placeholder location="classpath:web-config.properties"
+                                  file-encoding="UTF-8"
+                                  ignore-unresolvable="true"
+                                  order="9"/>
 
     <bean id="captchaProducer" class="com.google.code.kaptcha.impl.DefaultKaptcha">
         <property name="config">
@@ -36,5 +40,4 @@
 
     <import resource="spring-mysql.xml"/>
     <import resource="spring-redis.xml"/>
-    <import resource="spring-mongo.xml"/>
 </beans>

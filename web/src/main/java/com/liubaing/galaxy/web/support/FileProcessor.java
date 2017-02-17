@@ -4,7 +4,6 @@ import com.liubaing.galaxy.exception.FileUploadException;
 import com.liubaing.galaxy.util.IDGenerator;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,6 +12,7 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 
 @Component
 public class FileProcessor {
@@ -32,9 +32,9 @@ public class FileProcessor {
 
     private String copyFile(MultipartFile src, String destDir) {
         String suffix = FilenameUtils.getExtension(src.getOriginalFilename());
-        DateTime now = DateTime.now();
+        LocalDate now = LocalDate.now();
         //按时间排序
-        String filePath = Paths.get(String.valueOf(now.getYear()), String.valueOf(now.getMonthOfYear()), String.valueOf(now.getDayOfMonth())).toString();
+        String filePath = Paths.get(String.valueOf(now.getYear()), String.valueOf(now.getMonth()), String.valueOf(now.getDayOfMonth())).toString();
         String absolutePath = FilenameUtils.concat(destDir, filePath);
         String fileName = IDGenerator.generate() + FilenameUtils.EXTENSION_SEPARATOR_STR + suffix;
         try {

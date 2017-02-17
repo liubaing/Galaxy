@@ -1,7 +1,7 @@
 package com.liubaing.galaxy.web.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.liubaing.galaxy.web.support.SpringContext;
+import com.liubaing.galaxy.web.support.SpringContextHolder;
 
 public class ResponseVo<T> {
 
@@ -24,7 +24,7 @@ public class ResponseVo<T> {
     }
 
     public ResponseVo(ErrorCode code) {
-        this(code.intValue(), SpringContext.getMessage(code.key));
+        this(code.intValue(), SpringContextHolder.getMessage(code.key));
     }
 
     public ResponseVo<T> setData(T data) {
@@ -37,7 +37,7 @@ public class ResponseVo<T> {
     }
 
     public ResponseVo buildError(ErrorCode code) {
-        this.errorMsg = SpringContext.getMessage(code.key);
+        this.errorMsg = SpringContextHolder.getMessage(code.key);
         this.errorCode = code.intValue();
         return this;
     }
