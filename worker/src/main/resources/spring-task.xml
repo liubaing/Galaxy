@@ -1,20 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:task="http://www.springframework.org/schema/task"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:reg="http://www.dangdang.com/schema/ddframe/reg"
+       xmlns:job="http://www.dangdang.com/schema/ddframe/job"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 			http://www.springframework.org/schema/beans/spring-beans.xsd
-			http://www.springframework.org/schema/task 
-			http://www.springframework.org/schema/task/spring-task.xsd
 			http://www.springframework.org/schema/context
-		    http://www.springframework.org/schema/context/spring-context.xsd">
+		    http://www.springframework.org/schema/context/spring-context.xsd
+		    http://www.dangdang.com/schema/ddframe/reg
+		    http://www.dangdang.com/schema/ddframe/reg/reg.xsd
+		    http://www.dangdang.com/schema/ddframe/job
+		    http://www.dangdang.com/schema/ddframe/job/job.xsd">
 
-    <context:property-placeholder location="classpath:database.properties"/>
+    <context:property-placeholder location="classpath:config-zookeeper.properties"
+                                  file-encoding="UTF-8"
+                                  ignore-unresolvable="true"
+                                  order="9"/>
 
-    <task:annotation-driven/>
+    <context:component-scan base-package="com.liubaing.galaxy.worker"/>
 
-    <bean id="messageDelegate" class="com.liubaing.galaxy.worker.listener.MessageDelegate"/>
+    <!--配置作业注册中心 -->
+    <reg:zookeeper id="regCenter" server-lists="${zk.connect.string}"
+                   namespace="ads-job" max-retries="3"
+                   connection-timeout-milliseconds="${zk.connection.timeout.ms}"
+                   session-timeout-milliseconds="${zk.session.timeout.ms}"/>
 
-    <import resource="spring-mysql.xml"/>
+    <!-- 配置作业-->
+    <job:simple id="dataProcessor" class="com.liubaing.galaxy.worker.processor.DataProcessor"
+                registry-center-ref="regCenter"
+                cron="0 0/5 * * * ?"
+                sharding-total-count="1">
+        <job:listener class="com.liubaing.galaxy.worker.listener.TaskListener"/>
+    </job:simple>
+
+    <import resource="classpath:spring-mysql.xml"/>
+    <import resource="classpath:spring-redis.xml"/>
 </beans>

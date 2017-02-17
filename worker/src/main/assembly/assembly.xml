@@ -7,12 +7,17 @@
     <includeBaseDirectory>true</includeBaseDirectory>
     <fileSets>
         <fileSet>
-            <directory>src/main/bin</directory>
+            <directory>${project.build.directory}/galaxy/META-INF/assembly/bin</directory>
             <outputDirectory>bin</outputDirectory>
             <fileMode>0755</fileMode>
         </fileSet>
         <fileSet>
             <directory>src/main/assembly/conf</directory>
+            <outputDirectory>conf</outputDirectory>
+            <fileMode>0644</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/assembly/conf/${package.environment}</directory>
             <outputDirectory>conf</outputDirectory>
             <fileMode>0644</fileMode>
         </fileSet>
