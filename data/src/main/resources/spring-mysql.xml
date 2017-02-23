@@ -64,4 +64,13 @@
           p:dataSource-ref="multipleDataSource"
           p:lazyInit="true"/>
 
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="galaxyDataSource"/>
+        <property name="typeAliasesPackage" value="com.liubaing.galaxy.entity"/>
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.liubaing.galaxy.persistence"/>
+    </bean>
+
 </beans>

@@ -1,6 +1,6 @@
 package com.liubaing.galaxy.web.support;
 
-import cn.nhorizon.ads.framework.base.Constants;
+import com.liubaing.galaxy.util.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.InetAddressValidator;
 import org.springframework.core.MethodParameter;

@@ -9,6 +9,8 @@
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
 
+    <context:component-scan base-package="com.liubaing.galaxy.repository"/>
+
     <context:property-placeholder ignore-resource-not-found="true"
                                   location="classpath*:config-redis.properties,
                                   classpath:config-redis-cluster-pool.properties,
@@ -34,9 +36,9 @@
           p:connectionFactory-ref="jedisConnectionFactory"/>
 
     <util:list id="listOfNodes">
-        <value>ads-redis1.nhorizon.in:6391</value>
-        <value>ads-redis2.nhorizon.in:6392</value>
-        <value>ads-redis3.nhorizon.in:6393</value>
+        <value>localhost:6391</value>
+        <value>localhost:6392</value>
+        <value>localhost:6393</value>
     </util:list>
 
     <bean id="clusterConfig"

@@ -10,7 +10,7 @@
 
     <context:component-scan base-package="com.liubaing.galaxy.service"/>
 
-    <context:property-placeholder location="classpath:database.properties,classpath:test-config.properties"/>
+    <context:property-placeholder location="classpath:test-config.properties"/>
 
     <beans:bean id="webConfig" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
         <beans:property name="location" value="classpath:test-config.properties"/>
@@ -19,6 +19,5 @@
 
     <import resource="spring-mysql.xml"/>
     <import resource="spring-redis.xml"/>
-    <import resource="spring-mongo.xml"/>
 
 </beans>
