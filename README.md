@@ -13,6 +13,9 @@ Galaxy for server side of mobile application with RESTful architectures.
 ### data
 数据&缓存模块，包含Redis-Cluster、Druid连接池、数据源配置等。
 
+### mq
+消息队列模块，包含Kafka的Producer和Consumer。
+
 ### worker
 定时任务（数据刷新）。
 
