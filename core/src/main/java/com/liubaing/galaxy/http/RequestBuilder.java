@@ -17,10 +17,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 构建请求
@@ -181,7 +178,7 @@ public class RequestBuilder {
 
     }
 
-    public byte[] request() {
-        return HttpClientUtils.invoke(this.build());
+    public Optional<Response> request() {
+        return Optional.ofNullable(HttpClientUtils.execute(this.build()));
     }
 }

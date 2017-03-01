@@ -11,7 +11,6 @@ import org.apache.http.config.ConnectionConfig;
 import org.apache.http.config.MessageConstraints;
 import org.apache.http.config.SocketConfig;
 import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -58,7 +57,22 @@ public final class HttpClientUtils {
     static {
         Properties properties = ConfigUtils.loadProperties("config-http-client.properties");
         PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager();
+        int totalConnection = NumberUtils.toInt(properties.getProperty("http.connection.max.total"), MAX_TOTAL_CONNECTIONS);
+        connManager.setMaxTotal(totalConnection);
+        connManager.setDefaultMaxPerRoute(totalConnection);
+
+        int socketTimeout = NumberUtils.toInt(properties.getProperty("http.connection.socket.timeout.ms"), READ_TIMEOUT);
+        int connectTimeout = NumberUtils.toInt(properties.getProperty("http.connection.timeout.ms"), CONNECT_TIMEOUT);
+        int connectionRequestTimeout = NumberUtils.toInt(properties.getProperty("http.connection.request.timeout.ms"), WAIT_TIMEOUT);
+        REQUEST_CONFIG = RequestConfig.custom()
+                .setSocketTimeout(socketTimeout)
+                .setConnectTimeout(connectTimeout)
+                .setConnectionRequestTimeout(connectionRequestTimeout)
+                .build();
+
         SocketConfig socketConfig = SocketConfig.custom()
+                .setSoTimeout(socketTimeout)
+                .setSoKeepAlive(true)
                 .setTcpNoDelay(true)
                 .build();
         connManager.setDefaultSocketConfig(socketConfig);
@@ -74,101 +88,41 @@ public final class HttpClientUtils {
                 .setMessageConstraints(messageConstraints)
                 .build();
         connManager.setDefaultConnectionConfig(connectionConfig);
-        int totalConnection = NumberUtils.toInt(properties.getProperty("http.connection.max.total"), MAX_TOTAL_CONNECTIONS);
-        connManager.setMaxTotal(totalConnection);
-        connManager.setDefaultMaxPerRoute(totalConnection);
-
-        int socketTimeout = NumberUtils.toInt(properties.getProperty("http.connection.socket.timeout.ms"), READ_TIMEOUT);
-        int connectTimeout = NumberUtils.toInt(properties.getProperty("http.connection.timeout.ms"), CONNECT_TIMEOUT);
-        int connectionRequestTimeout = NumberUtils.toInt(properties.getProperty("http.connection.request.timeout.ms"), WAIT_TIMEOUT);
-        REQUEST_CONFIG = RequestConfig.custom()
-                .setSocketTimeout(socketTimeout)
-                .setConnectTimeout(connectTimeout)
-                .setConnectionRequestTimeout(connectionRequestTimeout)
-                .build();
 
         HTTP_CLIENT = HttpClients.custom()
                 .setConnectionManager(connManager)
+                .setConnectionManagerShared(false)
                 .setDefaultRequestConfig(REQUEST_CONFIG)
                 .disableCookieManagement()
                 .disableAutomaticRetries()
+                .disableRedirectHandling()
+                .evictExpiredConnections()
+                .evictIdleConnections(4, TimeUnit.SECONDS)
+                .setUserAgent("Galaxy")
                 .build();
-
-        final ConnectionMonitorThread closedConnection = new ConnectionMonitorThread(connManager);
-        closedConnection.setDaemon(true);
-        closedConnection.setContextClassLoader(null);
-        closedConnection.start();
-
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
-                try {
-                    closedConnection.interrupt();
-                    closedConnection.shutdown();
-                    HTTP_CLIENT.close();
-                } catch (Exception e) {
-                    //ignore
-                }
-            }
-        });
     }
 
     private HttpClientUtils() {
     }
 
-    /**
-     * 关闭无效链接
-     */
-    private static class ConnectionMonitorThread extends Thread {
-
-        private final HttpClientConnectionManager connMgr;
-        private volatile boolean shutdown;
-
-        public ConnectionMonitorThread(HttpClientConnectionManager connMgr) {
-            super();
-            this.connMgr = connMgr;
-        }
-
-        @Override
-        public void run() {
-            try {
-                while (!shutdown) {
-                    synchronized (this) {
-                        wait(4 * 1000);
-                        connMgr.closeExpiredConnections();
-                        connMgr.closeIdleConnections(8, TimeUnit.SECONDS);
-                    }
-                }
-            } catch (InterruptedException ex) {
-                // terminate
-            }
-        }
-
-        public void shutdown() {
-            shutdown = true;
-            synchronized (this) {
-                notifyAll();
-            }
-        }
-    }
-
-    public static byte[] invoke(HttpRequestBase method) {
+    static Response execute(HttpRequestBase method) {
         String url = method.getURI().toString();
         try {
-            if (method.getConfig() == null) {
-                method.setConfig(REQUEST_CONFIG);
-            }
-            CloseableHttpResponse response = HTTP_CLIENT.execute(method);
-            final StatusLine statusLine = response.getStatusLine();
-            final HttpEntity entity = response.getEntity();
-            try {
-                if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
-                    EntityUtils.consumeQuietly(entity);
-                    LOGGER.warn("[" + url + "] 请求失败，状态值 [" + statusLine.getStatusCode() + "]");
-                } else if (entity != null) {
-                    return EntityUtils.toByteArray(entity);
+            try (CloseableHttpResponse closeableHttpResponse = HTTP_CLIENT.execute(method)) {
+                final int code = closeableHttpResponse.getStatusLine().getStatusCode();
+                Response response = new Response(code);
+                final Header[] headers = closeableHttpResponse.getAllHeaders();
+                for (final Header header : headers) {
+                    response.addHeader(header.getName(), header.getValue());
                 }
-            } finally {
-                EntityUtils.consumeQuietly(entity);
+                final HttpEntity entity = closeableHttpResponse.getEntity();
+                if (code == HttpStatus.SC_OK) {
+                    response.setBody(EntityUtils.toByteArray(entity));
+                } else {
+                    EntityUtils.consumeQuietly(entity);
+                    LOGGER.warn("[" + url + "] 请求失败，状态值 [" + code + "]");
+                }
+                return response;
             }
         } catch (SocketException | SocketTimeoutException | ConnectTimeoutException | NoHttpResponseException e) {
             LOGGER.warn("[" + url + "] 请求异常，原因 [" + ExceptionUtils.getRootCauseMessage(e) + " ]");
