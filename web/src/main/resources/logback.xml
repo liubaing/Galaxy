@@ -2,10 +2,15 @@
 <configuration>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>[%-5level %d{HH:mm:ss.SSS}] - %msg%n</pattern>
-        </layout>
+        <encoder>
+            <pattern>[%-5level][%d{HH:mm:ss}] - [%logger{15}] - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
     </appender>
+
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="org.apache" level="INFO"/>
+    <logger name="kafka" level="WARN"/>
 
     <root level="DEBUG">
         <appender-ref ref="CONSOLE"/>

@@ -3,9 +3,11 @@
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${catalina.home}/logs/galaxy-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>3</maxHistory>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{HH:mm:ss} - %msg%n</pattern>
+            <pattern>[%-5level][%d{HH:mm:ss}] - [%logger{15}] - %msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
