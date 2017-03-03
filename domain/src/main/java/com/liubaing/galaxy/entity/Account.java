@@ -12,7 +12,6 @@ public class Account {
     public int id;
     public String email;
     public String password;
-    public Double balance;
     public String name;
     public String phone;
     public Integer state;
@@ -34,4 +33,7 @@ public class Account {
         }
     }
 
+    public String getId() {
+        return String.valueOf(id);
+    }
 }

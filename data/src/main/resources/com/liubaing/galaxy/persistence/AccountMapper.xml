@@ -3,18 +3,27 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.liubaing.galaxy.persistence.AccountMapper">
 
+    <select id="getAll" resultType="Account">
+        SELECT
+        id,
+        email,
+        name,
+        phone,
+        FROM t_galaxy_account
+        LIMIT 10000
+    </select>
+
     <select id="getAccount" resultType="Account">
         SELECT
         id,
         email,
         password,
         state,
-        balance,
         name,
         phone,
         date_created AS createDate,
         date_edited AS editDate
-        FROM t_cms_account
+        FROM t_galaxy_account
         <where>
             <if test="email != null">
                 email = #{email}
@@ -26,7 +35,7 @@
     </select>
 
     <update id="updateAccount" parameterType="Account">
-        UPDATE t_cms_account
+        UPDATE t_galaxy_account
         <set>
             <if test="password != null">
                 password = #{password},
@@ -40,21 +49,16 @@
             <if test="phone != null">
                 phone = #{phone},
             </if>
-            <if test="balance != null">
-                balance = #{balance},
-            </if>
         </set>
         WHERE account_id = #{accountId}
     </update>
 
     <insert id="insertAccount" parameterType="me.shashalu.ads.cms.domain.Account">
         <![CDATA[
-
-        INSERT INTO t_cms_account
-        (email, password, name, phone, state, balance, date_created, date_edited)
+        INSERT INTO t_galaxy_account
+        (email, password, name, phone, state, date_created, date_edited)
         VALUES
-            (#{email}, #{password}, #{name}, #{phone}, #{state}, #{balance},#{createDate}, #{editDate})
-
+            (#{email}, #{password}, #{name}, #{phone}, #{state}, #{createDate}, #{editDate})
         ]]>
     </insert>
 

@@ -21,6 +21,9 @@ Welcome to Galaxy
 
 
 ## Usage
+### data
+导入SQL到MySQL，执行`source data/src/main/resources/database/galaxy-x.x.sql`
+
 ### worker
 `mvn`打包会生成`tar`包，`scp`到目标机后执行`tar xvf galaxy-worker.tar.gz`，切换到目录`cd galaxy-worker/bin`执行`start.sh`即可。
 

@@ -4,7 +4,6 @@ import com.liubaing.galaxy.entity.Account;
 import com.liubaing.galaxy.persistence.AccountMapper;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 账户管理
+ *
  * @author heshuai
  * @version 9/24/14.
  */
@@ -38,7 +39,6 @@ public class AccountService {
 
     public void save(Account account) {
         account.createDate = new Date();
-        account.balance = NumberUtils.DOUBLE_ZERO;
         account.password = DigestUtils.md5Hex(account.password);
         accountMapper.insertAccount(account);
     }

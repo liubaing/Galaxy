@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="trackProcessor" class="com.liubaing.galaxy.worker.consumer.TrackProcessor" abstract="true">
+        <constructor-arg value="true" index="0" type="boolean"/>
+    </bean>
+
+    <bean id="trackImpProcessor" class="com.liubaing.galaxy.worker.consumer.TrackLoginProcessor" parent="trackProcessor"/>
+
+    <bean class="com.liubaing.galaxy.mq.consumer.KafkaConsumerClient">
+        <constructor-arg>
+            <bean class="com.liubaing.galaxy.mq.serializer.KafkaIntegerMessageDecoder"/>
+        </constructor-arg>
+        <constructor-arg>
+            <list>
+                <ref bean="trackImpProcessor"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
+</beans>

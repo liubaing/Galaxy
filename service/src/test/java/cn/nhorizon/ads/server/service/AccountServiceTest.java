@@ -39,7 +39,6 @@ public class AccountServiceTest extends BaseTest {
     public void testSave() {
         Account account = new Account();
         account.createDate = new Date();
-        account.balance = NumberUtils.DOUBLE_ZERO;
         account.password = DigestUtils.md5Hex(account.password);
         accountMapper.insertAccount(account);
     }

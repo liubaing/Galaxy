@@ -34,6 +34,7 @@
         <job:listener class="com.liubaing.galaxy.worker.listener.TaskListener"/>
     </job:simple>
 
+    <import resource="spring-consumer.xml"/>
     <import resource="classpath:spring-mysql.xml"/>
     <import resource="classpath:spring-redis.xml"/>
 </beans>

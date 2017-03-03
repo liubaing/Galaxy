@@ -17,4 +17,8 @@ abstract class KeyUtils {
         return StringUtils.join(keys, Constants.HYPHEN);
     }
 
+    static String account() {
+        return PREFIX + "account";
+    }
+
 }
