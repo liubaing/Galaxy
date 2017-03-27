@@ -130,8 +130,7 @@ public class RequestBuilder {
                         } else if (ArrayUtils.isNotEmpty(body)) {
                             entity = EntityBuilder.create()
                                     .setBinary(body)
-                                    .setContentType(org.apache.http.entity.ContentType.APPLICATION_FORM_URLENCODED)
-                                    .setContentEncoding(Constants.DEFAULT_CHARSET)
+                                    .setContentType(org.apache.http.entity.ContentType.create(ContentType.FORM.getMimeType(), Constants.DEFAULT_CHARSET))
                                     .build();
                         }
                         break;
@@ -143,7 +142,6 @@ public class RequestBuilder {
                             builder.setBinary(body);
                         }
                         entity = builder.setContentType(org.apache.http.entity.ContentType.APPLICATION_JSON)
-                                .setContentEncoding(Constants.DEFAULT_CHARSET)
                                 .build();
                         break;
                     case STREAM:
